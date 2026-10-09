@@ -38,5 +38,6 @@ shim:
     - /timer
     - /wake
     - /assign
+    - /handoff
   origins:
     - http://localhost:5173
