@@ -4,14 +4,20 @@ memory: 2048
 
 containers:
   - name: "waddle-concierge"
-    image: "ghcr.io/nchapman/waddle-concierge@sha256:99808d31fae275a2117254539d2f8408d7e13bed8c06da5955e9c4c84610142b"
+    image: "ghcr.io/nchapman/waddle-concierge@sha256:8394c5f5b7f7a88cf47aa2d4aa7c6f0c1dc441668d376c687ad9195ff56461ce"
     networks: [control]
     env:
       - CONCIERGE_PORT: "8081"
       - CONCIERGE_BACKEND: "tinfoil"
-      - CONCIERGE_ALLOWED_INSTANCES: "waddle"
       - CONCIERGE_ALLOWED_ORIGINS: "http://localhost:5173"
       - NODE_ENV: "production"
+      # Warm-standby pool: one blank machine ready to hand out
+      - WARM_POOL_SIZE: "1"
+      - STANDBY_TTL_MS: "3600000"
+      - STANDBY_CONFIG_REPO: "nchapman/waddle-config"
+      - STANDBY_CONFIG_TAG: "v0.0.41"
+      - INSTANCE_DOMAIN_BASE: "ddg-waddle.containers.tinfoil.dev"
+      - CONCIERGE_ALLOWED_INSTANCES: "waddle"
     secrets:
       - TINFOIL_ADMIN_KEY
       - CONCIERGE_TOKEN
@@ -21,6 +27,8 @@ networks:
     egress: allowlist
     allow:
       - api.tinfoil.sh   # the only verb surface: container deploy/stop/list
+      - ddg-waddle.containers.tinfoil.dev   # standby /health probes (is it up? is it blank?)
+      - "*.ddg-waddle.containers.tinfoil.dev"
 
 shim:
   upstream-port: 8081
@@ -30,5 +38,6 @@ shim:
     - /handshake
     - /timer
     - /wake
+    - /assign
   origins:
     - http://localhost:5173
