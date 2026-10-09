@@ -4,7 +4,7 @@ memory: 2048
 
 containers:
   - name: "waddle-concierge"
-    image: "ghcr.io/nchapman/waddle-concierge@sha256:e6baf101a61b5fba036570f724a2c32e0f7f95b8c86f7ce184d32198d2e90d9b"
+    image: "ghcr.io/nchapman/waddle-concierge@sha256:0ef4bba3845f1acca27e0c60f389bc9fc832d057a197350718a4f58de01035d8"
     networks: [control]
     env:
       - CONCIERGE_PORT: "8081"
@@ -27,9 +27,7 @@ networks:
     egress: allowlist
     allow:
       - api.tinfoil.sh   # the only verb surface: container deploy/stop/list
-      - waddle-standby-1.ddg-waddle.containers.tinfoil.dev   # standby /health probes
-      - waddle-standby-2.ddg-waddle.containers.tinfoil.dev   # (names recycle; 2 spares)
-      - waddle-standby-3.ddg-waddle.containers.tinfoil.dev
+
 
 shim:
   upstream-port: 8081
