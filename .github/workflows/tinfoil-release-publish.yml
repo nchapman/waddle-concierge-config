@@ -21,6 +21,19 @@ jobs:
       attestations: write   # publish the attestation
 
     steps:
+      - name: Ensure gh CLI >= 2.67.0 (runner images lag the action's floor)
+        shell: bash
+        run: |
+          MIN=2.67.0
+          GH_VERSION=$(gh --version | head -1 | awk '{print $3}')
+          if [ "$(printf '%s\n' "$MIN" "$GH_VERSION" | sort -V | head -1)" != "$MIN" ]; then
+            echo "runner gh $GH_VERSION < $MIN — installing current gh"
+            curl -fsSL https://cli.github.com/packages/githubcli-archive-keyring.gpg | sudo dd of=/usr/share/keyrings/githubcli-archive-keyring.gpg
+            echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/githubcli-archive-keyring.gpg] https://cli.github.com/apt stable main" | sudo tee /etc/apt/sources.list.d/github-cli.list >/dev/null
+            sudo apt-get update -qq && sudo apt-get install -y -qq gh
+          fi
+          gh --version
+
       - name: Measure image, attest, and publish the release
         uses: tinfoilsh/measure-image-action@c33809b2a4a9ced570ab869765aecd44b4d3cbd5 # v0.11.0
         with:
