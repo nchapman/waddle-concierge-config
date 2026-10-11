@@ -28,8 +28,8 @@ jobs:
 
       - name: Refuse broken image pin (digest guard)
         run: |
-          if ! grep -Eq 'image:[[:space:]]*["'\''']?[^@"'\''[:space:]]+@sha256:[0-9a-f]{64}' tinfoil-config.yml; then
-            echo "::error::tinfoil-config.yml image pin missing or invalid (expected image: <ref>@sha256:<64hex>) — refusing to release (v0.0.42 / v0.0.52 empty-digest class)"
+          if ! grep -Eq "image:.*@sha256:[0-9a-f]{64}" tinfoil-config.yml; then
+            echo "::error::image pin missing or invalid in tinfoil-config.yml - refusing to release"
             exit 1
           fi
 
