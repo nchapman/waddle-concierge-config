@@ -4,7 +4,7 @@ memory: 2048
 
 containers:
   - name: "waddle-concierge"
-    image: "ghcr.io/nchapman/waddle-concierge@sha256:2ae9c36740a519bbe547a071fb236c86fb2e43140aaa3f93fcacea6cc840aaa0"
+    image: "ghcr.io/nchapman/waddle-concierge@sha256:dead295b58a8cfc889ecf62758bda75724b839b157a49e7cc88e7ab161b0fccd"
     networks: [control]
     env:
       - CONCIERGE_PORT: "8081"
@@ -36,12 +36,10 @@ networks:
     allow:
       - api.tinfoil.sh   # the only verb surface: container deploy/stop/list
       - accounts.betterbase.dev   # JWKS fetch (client JWT verification)
-      # instance /health probes (ensure's zombie check). The platform resolves
-      # each entry at deploy time — a ZONE APEX (ddg-waddle.containers...) has no
-      # A record and poisons the firewall build (the 23:10Z–01:10Z wedge).
-      # Concrete instance hosts only; the cattle plan (per-boot names) needs a
-      # wildcard/IP-allowlist answer — parked in PLAN.md.
-      - waddle.ddg-waddle.containers.tinfoil.dev
+      # NOTE: instance /health probes CANNOT be allowlisted here — the platform
+      # resolves entries at deploy time, and instance hosts NXDOMAIN while
+      # stopped (stop = DNS teardown). Probes degrade to always-dance on fires
+      # (correct, one wasted boot); PLAN.md tracks the wildcard/CIDR ask.
 
 
 shim:
